@@ -1,0 +1,39 @@
+newmtl traffic_blue
+Kd 0.0000 0.2000 0.5500
+Ka 0.0000 0.0000 0.0000
+Ks 0.0800 0.0800 0.0800
+Pr 0.7500
+map_Kd textures/traffic_blue_basecolor.png
+illum 2
+
+newmtl traffic_yellow
+Kd 1.0000 0.7800 0.0300
+Ka 0.0000 0.0000 0.0000
+Ks 0.0800 0.0800 0.0800
+Pr 0.7500
+map_Kd textures/traffic_yellow_basecolor.png
+illum 2
+
+newmtl traffic_orange
+Kd 1.0000 0.2800 0.0200
+Ka 0.0000 0.0000 0.0000
+Ks 0.0800 0.0800 0.0800
+Pr 0.7500
+map_Kd textures/traffic_orange_basecolor.png
+illum 2
+
+newmtl white_stripe
+Kd 0.9500 0.9500 0.9000
+Ka 0.0000 0.0000 0.0000
+Ks 0.0800 0.0800 0.0800
+Pr 0.5500
+map_Kd textures/white_stripe_basecolor.png
+illum 2
+
+newmtl black_stripe
+Kd 0.0150 0.0150 0.0150
+Ka 0.0000 0.0000 0.0000
+Ks 0.0800 0.0800 0.0800
+Pr 0.8000
+map_Kd textures/black_stripe_basecolor.png
+illum 2

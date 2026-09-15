@@ -1,0 +1,350 @@
+diff --git a/Unreal/CarlaUE4/Plugins/Converters/MDL/Dependencies/Engine/InstallPrivateMaterialInterface.bat b/Unreal/CarlaUE4/Plugins/Converters/MDL/Dependencies/Engine/InstallPrivateMaterialInterface.bat
+index 09cfe62cf..d0256cdb2 100644
+--- a/Unreal/CarlaUE4/Plugins/Converters/MDL/Dependencies/Engine/InstallPrivateMaterialInterface.bat
++++ b/Unreal/CarlaUE4/Plugins/Converters/MDL/Dependencies/Engine/InstallPrivateMaterialInterface.bat
+@@ -15,15 +15,15 @@ set MAT_DIR=%UE4_ROOT%\Engine\Source\Runtime\Engine\Private\Materials
+ set DEST_MAT_DIR=%~dp0..\..\Source\MDL\Private\Engine
+ 
+ :: If the files already exist don't update them
+-if not exist %MAT_DIR% (
++if not exist "%MAT_DIR%" (
+     echo Error: missing Unreal Engine private materials folder: %MAT_DIR%
+     exit /B -1
+ )
+ 
+-if not exist %DEST_MAT_DIR% (
+-    mkdir %DEST_MAT_DIR%
++if not exist "%DEST_MAT_DIR%" (
++    mkdir "%DEST_MAT_DIR%"
+ )
+-pushd %DEST_MAT_DIR%
++pushd "%DEST_MAT_DIR%"
+ 
+ :: If the files already exist don't update them
+ if exist HLSLMaterialTranslator.cpp (
+@@ -31,19 +31,19 @@ if exist HLSLMaterialTranslator.cpp (
+ )
+ 
+ :: Copy the private engine material files to this folder
+-copy /Y %MAT_DIR%\HLSLMaterialTranslator.cpp        HLSLMaterialTranslator.cpp > nul
+-copy /Y %MAT_DIR%\HLSLMaterialTranslator.h          HLSLMaterialTranslator.h > nul
+-copy /Y %MAT_DIR%\MaterialInstanceSupport.h         MaterialInstanceSupport.h > nul
+-copy /Y %MAT_DIR%\MaterialUniformExpressions.cpp    MaterialUniformExpressions.cpp > nul
+-copy /Y %MAT_DIR%\MaterialUniformExpressions.h      MaterialUniformExpressions.h > nul
++copy /Y "%MAT_DIR%\HLSLMaterialTranslator.cpp"        HLSLMaterialTranslator.cpp > nul || exit /B
++copy /Y "%MAT_DIR%\HLSLMaterialTranslator.h"          HLSLMaterialTranslator.h > nul || exit /B
++copy /Y "%MAT_DIR%\MaterialInstanceSupport.h"         MaterialInstanceSupport.h > nul || exit /B
++copy /Y "%MAT_DIR%\MaterialUniformExpressions.cpp"    MaterialUniformExpressions.cpp > nul || exit /B
++copy /Y "%MAT_DIR%\MaterialUniformExpressions.h"      MaterialUniformExpressions.h > nul || exit /B
+ 
+ :: Apply the patch to the private engine material files
+-call git apply --whitespace=nowarn --ignore-space-change %~dp0HLSLMaterialTranslator.cpp.patch
+-call git apply --whitespace=nowarn --ignore-space-change %~dp0HLSLMaterialTranslator.h.patch
+-call git apply --whitespace=nowarn --ignore-space-change %~dp0MaterialInstanceSupport.h.patch
+-call git apply --whitespace=nowarn --ignore-space-change %~dp0MaterialUniformExpressions.cpp.patch
+-call git apply --whitespace=nowarn --ignore-space-change %~dp0MaterialUniformExpressions.h.patch
++call git apply --whitespace=nowarn --ignore-space-change "%~dp0HLSLMaterialTranslator.cpp.patch" || exit /B
++call git apply --whitespace=nowarn --ignore-space-change "%~dp0HLSLMaterialTranslator.h.patch" || exit /B
++call git apply --whitespace=nowarn --ignore-space-change "%~dp0MaterialInstanceSupport.h.patch" || exit /B
++call git apply --whitespace=nowarn --ignore-space-change "%~dp0MaterialUniformExpressions.cpp.patch" || exit /B
++call git apply --whitespace=nowarn --ignore-space-change "%~dp0MaterialUniformExpressions.h.patch" || exit /B
+ 
+ :finished
+ 
+-popd
+\ No newline at end of file
++popd
+diff --git a/Util/BuildTools/BuildOSM2ODR.bat b/Util/BuildTools/BuildOSM2ODR.bat
+index 0e8e879f7..641dd974b 100644
+--- a/Util/BuildTools/BuildOSM2ODR.bat
++++ b/Util/BuildTools/BuildOSM2ODR.bat
+@@ -73,6 +73,8 @@ rem Set the visual studio solution directory
+ rem
+ set OSM2ODR_VSPROJECT_PATH=%INSTALLATION_DIR:/=\%osm2odr-visualstudio\
+ set OSM2ODR_SOURCE_PATH=%INSTALLATION_DIR:/=\%osm2odr-source\
++set OSM2ODR_CMAKE_SOURCE_PATH=%OSM2ODR_SOURCE_PATH:~0,-1%
++set OSM2ODR_EXTRACTED_PATH=%INSTALLATION_DIR:/=\%sumo-%CURRENT_OSM2ODR_COMMIT%\
+ set OSM2ODR_INSTALL_PATH=%ROOT_PATH:/=\%PythonAPI\carla\dependencies\
+ set OSM2ODR__SERVER_INSTALL_PATH=%ROOT_PATH:/=\%Unreal\CarlaUE4\Plugins\Carla\CarlaDependencies
+ set CARLA_DEPENDENCIES_FOLDER=%ROOT_PATH:/=\%Unreal\CarlaUE4\Plugins\Carla\CarlaDependencies\
+@@ -95,10 +97,18 @@ rem Build OSM2ODR
+ if %BUILD_OSM2ODR% == true (
+     cd "%INSTALLATION_DIR%"
+     if not exist "%OSM2ODR_SOURCE_PATH%" (
+-        curl --retry 5 --retry-max-time 120 -L -o OSM2ODR.zip https://github.com/carla-simulator/sumo/archive/%CURRENT_OSM2ODR_COMMIT%.zip
+-        tar -xf OSM2ODR.zip
+-        del OSM2ODR.zip
+-        ren sumo-%CURRENT_OSM2ODR_COMMIT% osm2odr-source
++        if not exist "%OSM2ODR_EXTRACTED_PATH%" (
++            curl --retry 5 --retry-max-time 120 -L -o OSM2ODR.zip https://github.com/carla-simulator/sumo/archive/%CURRENT_OSM2ODR_COMMIT%.zip
++            if %errorlevel% neq 0 goto error_download
++            tar -xf OSM2ODR.zip
++            if %errorlevel% neq 0 goto error_extract
++            if exist OSM2ODR.zip del /f /q OSM2ODR.zip
++        )
++        if exist "%OSM2ODR_EXTRACTED_PATH%" (
++            move /Y "%OSM2ODR_EXTRACTED_PATH%" "%OSM2ODR_SOURCE_PATH:~0,-1%"
++            if %errorlevel% neq 0 goto error_extract
++        )
++        if not exist "%OSM2ODR_SOURCE_PATH%" goto error_extract
+     )
+     
+     cd ..
+@@ -108,17 +118,19 @@ if %BUILD_OSM2ODR% == true (
+     cmake -G %GENERATOR% -A x64^
+         -DCMAKE_CXX_FLAGS_RELEASE="/MD /MP"^
+         -DCMAKE_INSTALL_PREFIX="%OSM2ODR_INSTALL_PATH:\=/%"^
+-        -DPROJ_INCLUDE_DIR=%INSTALLATION_DIR:/=\%\proj-install\include^
+-        -DPROJ_LIBRARY=%INSTALLATION_DIR:/=\%\proj-install\lib\proj.lib^
+-        -DXercesC_INCLUDE_DIR=%INSTALLATION_DIR:/=\%\xerces-c-3.2.3-install\include^
+-        -DXercesC_LIBRARY=%INSTALLATION_DIR:/=\%\xerces-c-3.2.3-install\lib\xerces-c.lib^
+-        "%OSM2ODR_SOURCE_PATH%"
++        -DPROJ_INCLUDE_DIR="%INSTALLATION_DIR:/=\%proj-install\include"^
++        -DPROJ_LIBRARY="%INSTALLATION_DIR:/=\%proj-install\lib\proj.lib"^
++        -DXercesC_INCLUDE_DIR="%INSTALLATION_DIR:/=\%xerces-c-3.2.3-install\include"^
++        -DXercesC_LIBRARY="%INSTALLATION_DIR:/=\%xerces-c-3.2.3-install\lib\xerces-c_3.lib"^
++        "%OSM2ODR_CMAKE_SOURCE_PATH%"
+     if %errorlevel% neq 0 goto error_cmake
+ 
+     cmake --build . --config Release --target install | findstr /V "Up-to-date:"
+     if %errorlevel% neq 0 goto error_install
+-    copy %OSM2ODR_INSTALL_PATH%\lib\osm2odr.lib %CARLA_DEPENDENCIES_FOLDER%\lib
+-    copy %OSM2ODR_INSTALL_PATH%\include\OSM2ODR.h %CARLA_DEPENDENCIES_FOLDER%\include
++    copy "%OSM2ODR_INSTALL_PATH%\lib\osm2odr.lib" "%CARLA_DEPENDENCIES_FOLDER%\lib"
++    if %errorlevel% neq 0 goto error_install
++    copy "%OSM2ODR_INSTALL_PATH%\include\OSM2ODR.h" "%CARLA_DEPENDENCIES_FOLDER%\include"
++    if %errorlevel% neq 0 goto error_install
+ )
+ 
+ goto success
+@@ -131,6 +143,16 @@ rem ============================================================================
+     if %BUILD_OSM2ODR% == true echo %FILE_N% OSM2ODR has been successfully installed in "%OSM2ODR_INSTALL_PATH%"!
+     goto good_exit
+ 
++:error_download
++    echo.
++    echo %FILE_N% [ERROR] An error ocurred while downloading OSM2ODR.
++    goto bad_exit
++
++:error_extract
++    echo.
++    echo %FILE_N% [ERROR] An error ocurred while preparing OSM2ODR sources.
++    goto bad_exit
++
+ :error_cmake
+     echo.
+     echo %FILE_N% [ERROR] An error ocurred while executing the cmake.
+diff --git a/Util/InstallersWin/install_boost.bat b/Util/InstallersWin/install_boost.bat
+index 8becad35b..c813dd917 100644
+--- a/Util/InstallersWin/install_boost.bat
++++ b/Util/InstallersWin/install_boost.bat
+@@ -54,6 +54,7 @@ if "%BOOST_VERSION%" == "" (
+ rem If not set set the build dir to the current dir
+ if "%BUILD_DIR%" == "" set BUILD_DIR=%~dp0
+ if not "%BUILD_DIR:~-1%"=="\" set BUILD_DIR=%BUILD_DIR%\
++set BUILD_EXTRACT_DIR=%BUILD_DIR:~0,-1%
+ 
+ rem If not defined, use Visual Studio 2022 as tool set
+ if "%TOOLSET%" == "" set TOOLSET=msvc-14.3
+@@ -103,11 +104,14 @@ if not exist "%BOOST_SRC_DIR%" (
+     if exist "%ProgramW6432%/7-Zip/7z.exe" (
+         "%ProgramW6432%/7-Zip/7z.exe" x "%BOOST_TEMP_FILE_DIR%" -o"%BUILD_DIR%" -y
+     ) else (
+-        powershell -Command "Expand-Archive '%BOOST_TEMP_FILE_DIR%' -DestinationPath '%BUILD_DIR%' -Force"
++        tar -xf "%BOOST_TEMP_FILE_DIR%" -C "%BUILD_EXTRACT_DIR%"
+     )
+     echo %FILE_N% Removing "%BOOST_TEMP_FILE%"
+-    del "%BOOST_TEMP_FILE_DIR%"
+-    rename "%BUILD_DIR%%BOOST_TEMP_FOLDER%" "%BOOST_BASENAME%-source"
++    if exist "%BOOST_TEMP_FILE_DIR%" del /f /q "%BOOST_TEMP_FILE_DIR%"
++    if exist "%BUILD_DIR%%BOOST_TEMP_FOLDER%" (
++        move /Y "%BUILD_DIR%%BOOST_TEMP_FOLDER%" "%BOOST_SRC_DIR:~0,-1%"
++    )
++    if not exist "%BOOST_SRC_DIR%" goto error_extract
+ ) else (
+     echo %FILE_N% Not downloading boost because already exists the folder "%BOOST_SRC_DIR%".
+ )
+@@ -190,6 +194,11 @@ rem ============================================================================
+     echo %FILE_N% [B2 ERROR] An error ocurred while installing using "b2.exe".
+     goto bad_exit
+ 
++:error_extract
++    echo.
++    echo %FILE_N% [EXTRACT ERROR] An error ocurred while preparing boost sources.
++    goto bad_exit
++
+ :good_exit
+     echo %FILE_N% Exiting...
+     endlocal
+@@ -204,23 +213,24 @@ rem ============================================================================
+     exit /b %errorlevel%
+ 
+ :CheckSumEvaluate
+-set filepath=%1
+-set checksum=%2
++setlocal enabledelayedexpansion
++set "filepath=%~1"
++set "checksum=%~2"
++set "filechecksum="
+ 
+ echo %FILE_N% calculating %filepath% checksum...
+ 
+-set PsCommand="(Get-FileHash %filepath%).Hash -eq '%checksum%'"
+-
+-for /f %%F in ('Powershell -C %PsCommand%') do (
+-	set filechecksum=%%F
++for /f "skip=1 tokens=* delims=" %%F in ('certutil -hashfile "%filepath%" SHA256 ^| findstr /V /I "CertUtil"') do (
++    if not defined filechecksum set "filechecksum=%%F"
+ )
++set "filechecksum=!filechecksum: =!"
+ 
+-if %filechecksum% == True (
++if /I "!filechecksum!" == "!checksum!" (
+ 	echo %FILE_N% %filepath% checksum OK
+-	set "%~3=0"
++	endlocal & set "%~3=0"
+     exit /b 0
+ ) else (
+ 	echo %FILE_N% %filepath% BAD SHA256 checksum
+-	set "%~3=1"
++	endlocal & set "%~3=1"
+     exit /b 1
+ )
+diff --git a/Util/InstallersWin/install_eigen.bat b/Util/InstallersWin/install_eigen.bat
+index 4a621df43..b1ccea27a 100644
+--- a/Util/InstallersWin/install_eigen.bat
++++ b/Util/InstallersWin/install_eigen.bat
+@@ -34,6 +34,7 @@ if not "%1"=="" (
+ rem If not set set the build dir to the current dir
+ if "%BUILD_DIR%" == "" set BUILD_DIR=%~dp0
+ if not "%BUILD_DIR:~-1%"=="\" set BUILD_DIR=%BUILD_DIR%\
++set BUILD_EXTRACT_DIR=%BUILD_DIR:~0,-1%
+ 
+ rem ============================================================================
+ rem -- Get Eigen (CARLA dependency) -------------------------------------------
+@@ -57,7 +58,7 @@ if not exist "%EIGEN_SRC_DIR%" (
+     if %errorlevel% neq 0 goto error_download_eigen
+     rem Extract the downloaded library
+     echo %FILE_N% Extracting eigen from "%EIGEN_TEMP_FILE%".
+-    powershell -Command "Expand-Archive '%EIGEN_TEMP_FILE_DIR%' -DestinationPath '%BUILD_DIR%'"
++    tar -xf "%EIGEN_TEMP_FILE_DIR%" -C "%BUILD_EXTRACT_DIR%"
+     if %errorlevel% neq 0 goto error_extracting
+     echo %EIGEN_SRC_DIR%
+ 
+diff --git a/Util/InstallersWin/install_libpng.bat b/Util/InstallersWin/install_libpng.bat
+index fa26dc0df..c09bf1f69 100644
+--- a/Util/InstallersWin/install_libpng.bat
++++ b/Util/InstallersWin/install_libpng.bat
+@@ -44,6 +44,7 @@ if not "%ZLIB_INST_DIR:~-1%"=="\" set ZLIB_INST_DIR=%ZLIB_INST_DIR%\
+ rem If not set set the build dir to the current dir
+ if "%BUILD_DIR%" == "" set BUILD_DIR=%~dp0
+ if not "%BUILD_DIR:~-1%"=="\" set BUILD_DIR=%BUILD_DIR%\
++set BUILD_EXTRACT_DIR=%BUILD_DIR:~0,-1%
+ 
+ rem ============================================================================
+ rem -- Local Variables ---------------------------------------------------------
+@@ -86,7 +87,7 @@ if not exist "%LIBPNG_SRC_DIR%" (
+     if %errorlevel% neq 0 goto error_download
+     rem Extract the downloaded library
+     echo %FILE_N% Extracting libpng from "%LIBPNG_TEMP_FILE%".
+-    powershell -Command "Expand-Archive '%LIBPNG_TEMP_FILE_DIR%' -DestinationPath '%BUILD_DIR%'"
++    tar -xf "%LIBPNG_TEMP_FILE_DIR%" -C "%BUILD_EXTRACT_DIR%"
+     if %errorlevel% neq 0 goto error_extracting
+ 
+     rem Remove unnecessary files and folders
+@@ -117,6 +118,7 @@ cl /nologo /c /O2 /MD /Z7 /EHsc /MP /W2 /TP /GR /Gm-^
+  -DWIN32 -DNDEBUG -D_CRT_SECURE_NO_WARNINGS -DPNG_NO_MMX_CODE^
+  /I"%ZLIB_INST_DIR%include"^
+  "%LIBPNG_SOURCE_DIR%*.c"
++if %errorlevel% neq 0 goto error_compiling
+ 
+ if not exist "%LIBPNG_INSTALL_DIR%lib" (
+     echo %FILE_N% Creating "%LIBPNG_INSTALL_DIR%lib"
+@@ -130,6 +132,7 @@ if not exist "%LIBPNG_INSTALL_DIR%include" (
+ 
+ lib /nologo /MACHINE:X64 /LTCG /OUT:"%LIBPNG_INSTALL_DIR%lib\libpng.lib"^
+  /LIBPATH:"%ZLIB_INST_DIR%lib" "*.obj" "zlibstatic.lib"
++if %errorlevel% neq 0 goto error_generating_lib
+ 
+ copy "%LIBPNG_SOURCE_DIR%png.h" "%LIBPNG_INSTALL_DIR%include\png.h"
+ copy "%LIBPNG_SOURCE_DIR%pngconf.h" "%LIBPNG_INSTALL_DIR%include\pngconf.h"
+diff --git a/Util/InstallersWin/install_sqlite3.bat b/Util/InstallersWin/install_sqlite3.bat
+index 00c8007db..c27dd8a25 100644
+--- a/Util/InstallersWin/install_sqlite3.bat
++++ b/Util/InstallersWin/install_sqlite3.bat
+@@ -34,6 +34,7 @@ if not "%1"=="" (
+ rem If not set set the build dir to the current dir
+ if "%BUILD_DIR%" == "" set BUILD_DIR=%~dp0
+ if not "%BUILD_DIR:~-1%"=="\" set BUILD_DIR=%BUILD_DIR%\
++set BUILD_EXTRACT_DIR=%BUILD_DIR:~0,-1%
+ 
+ rem ============================================================================
+ rem -- Local Variables ---------------------------------------------------------
+@@ -60,7 +61,7 @@ powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%SQLITE_REP
+ if %errorlevel% neq 0 goto error_download
+ 
+ echo %FILE_N% Extracting Sqlite3 from "%SQLITE_ZIP%".
+-powershell -Command "Expand-Archive '%SQLITE_ZIP_DIR%' -DestinationPath '%BUILD_DIR%'"
++tar -xf "%SQLITE_ZIP_DIR%" -C "%BUILD_EXTRACT_DIR%"
+ move %BUILD_DIR%%SQLITE_BASE_NAME% %SQLITE_SRC_DIR%
+ 
+ cd %SQLITE_SRC_DIR%
+diff --git a/Util/InstallersWin/install_xercesc.bat b/Util/InstallersWin/install_xercesc.bat
+index 70b366753..1d908a760 100644
+--- a/Util/InstallersWin/install_xercesc.bat
++++ b/Util/InstallersWin/install_xercesc.bat
+@@ -40,6 +40,7 @@ if %GENERATOR% == "" set GENERATOR="Visual Studio 17 2022"
+ rem If not set set the build dir to the current dir
+ if "%BUILD_DIR%" == "" set BUILD_DIR=%~dp0
+ if not "%BUILD_DIR:~-1%"=="\" set BUILD_DIR=%BUILD_DIR%\
++set BUILD_EXTRACT_DIR=%BUILD_DIR:~0,-1%
+ 
+ rem ============================================================================
+ rem -- Local Variables ---------------------------------------------------------
+@@ -85,7 +86,7 @@ if not exist "%XERCESC_SRC_DIR%" (
+     if %errorlevel% neq 0 goto error_download
+     rem Extract the downloaded library
+     echo %FILE_N% Extracting xerces from "%XERCESC_TEMP_FILE%".
+-    powershell -Command "Expand-Archive '%XERCESC_TEMP_FILE_DIR%' -DestinationPath '%BUILD_DIR%'"
++    tar -xf "%XERCESC_TEMP_FILE_DIR%" -C "%BUILD_EXTRACT_DIR%"
+     if %errorlevel% neq 0 goto error_extracting
+ 
+     rem Remove unnecessary files and folders
+diff --git a/Util/InstallersWin/install_zlib.bat b/Util/InstallersWin/install_zlib.bat
+index 1af079303..d4909d9f5 100644
+--- a/Util/InstallersWin/install_zlib.bat
++++ b/Util/InstallersWin/install_zlib.bat
+@@ -39,6 +39,7 @@ if not "%1"=="" (
+ rem If not set set the build dir to the current dir
+ if "%BUILD_DIR%" == "" set BUILD_DIR=%~dp0
+ if not "%BUILD_DIR:~-1%"=="\" set BUILD_DIR=%BUILD_DIR%\
++set BUILD_EXTRACT_DIR=%BUILD_DIR:~0,-1%
+ 
+ rem If not defined, use Visual Studio 2022 as tool set
+ if "%TOOLSET%" == "" set TOOLSET=""
+@@ -58,6 +59,7 @@ set ZLIB_REPO=https://github.com/madler/zlib/archive/refs/tags/v%ZLIB_VERSION%.z
+ set ZLIB_BACKUP_REPO=https://carla-releases.s3.us-east-005.backblazeb2.com/Backup/zlib%ZLIB_VERSION:.=%.zip
+ set ZLIB_SRC_DIR=%BUILD_DIR%%ZLIB_BASENAME%-source\
+ set ZLIB_INSTALL_DIR=%BUILD_DIR%%ZLIB_BASENAME%-install\
++set ZLIB_CMAKE_SRC_DIR=%ZLIB_SRC_DIR:~0,-1%
+ 
+ rem ============================================================================
+ rem -- Get zlib ---------------------------------------------------------------
+@@ -79,7 +81,7 @@ if not exist "%ZLIB_SRC_DIR%" (
+     if %errorlevel% neq 0 goto error_download
+     rem Extract the downloaded library
+     echo %FILE_N% Extracting zlib from "%ZLIB_TEMP_FILE%".
+-    powershell -Command "Expand-Archive '%ZLIB_TEMP_FILE_DIR%' -DestinationPath '%BUILD_DIR%'"
++    tar -xf "%ZLIB_TEMP_FILE_DIR%" -C "%BUILD_EXTRACT_DIR%"
+     if %errorlevel% neq 0 goto error_extracting
+ 
+     rem Remove the no longer needed downloaded file
+@@ -102,7 +104,7 @@ rem -DCMAKE_CONFIGURATION_TYPES=Release^
+ cmake -G "NMake Makefiles"^
+  -DCMAKE_INSTALL_PREFIX="%ZLIB_INSTALL_DIR:\=/%"^
+  -DCMAKE_BUILD_TYPE=Release^
+- "%ZLIB_SRC_DIR%"
++ "%ZLIB_CMAKE_SRC_DIR%"
+ if %errorlevel% neq 0 goto error_cmake
+ 
+ rem https://stackoverflow.com/questions/601970/how-do-i-utilise-all-the-cores-for-nmake

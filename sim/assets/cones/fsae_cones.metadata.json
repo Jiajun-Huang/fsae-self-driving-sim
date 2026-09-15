@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "small_blue_single_white",
+    "label": "Small Blue, Single White Stripe",
+    "wemas_part_number": "400.000043.00.00",
+    "obj": "fsae_small_blue_single_white.obj",
+    "mtl": "fsae_cones.mtl",
+    "dimensions_mm": {
+      "length": 228,
+      "width": 228,
+      "height": 325
+    },
+    "mass_kg": 0.45,
+    "body_material": "traffic_blue",
+    "stripe_material": "white_stripe",
+    "stripe_count": 1
+  },
+  {
+    "slug": "small_yellow_single_black",
+    "label": "Small Yellow, Single Black Stripe",
+    "wemas_part_number": "400.000013.01.10",
+    "obj": "fsae_small_yellow_single_black.obj",
+    "mtl": "fsae_cones.mtl",
+    "dimensions_mm": {
+      "length": 228,
+      "width": 228,
+      "height": 325
+    },
+    "mass_kg": 0.45,
+    "body_material": "traffic_yellow",
+    "stripe_material": "black_stripe",
+    "stripe_count": 1
+  },
+  {
+    "slug": "small_orange_single_white",
+    "label": "Small Orange, Single White Stripe",
+    "wemas_part_number": "400.000013.00.00",
+    "obj": "fsae_small_orange_single_white.obj",
+    "mtl": "fsae_cones.mtl",
+    "dimensions_mm": {
+      "length": 228,
+      "width": 228,
+      "height": 325
+    },
+    "mass_kg": 0.45,
+    "body_material": "traffic_orange",
+    "stripe_material": "white_stripe",
+    "stripe_count": 1
+  },
+  {
+    "slug": "large_orange_dual_white",
+    "label": "Large Orange, Dual White Stripes",
+    "wemas_part_number": "307.610500.00.00",
+    "obj": "fsae_large_orange_dual_white.obj",
+    "mtl": "fsae_cones.mtl",
+    "dimensions_mm": {
+      "length": 285,
+      "width": 285,
+      "height": 505
+    },
+    "mass_kg": 1.05,
+    "body_material": "traffic_orange",
+    "stripe_material": "white_stripe",
+    "stripe_count": 2
+  }
+]

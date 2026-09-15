@@ -1,0 +1,32 @@
+map: Town01
+weather: ClearNoon
+
+ego_vehicle:
+  blueprint: vehicle.tesla.model3
+  spawn_point:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    pitch: 0.0
+    yaw: 0.0
+    roll: 0.0
+
+sensor_setup:
+  rgb_camera:
+    enabled: true
+    width: 640
+    height: 480
+    fov: 90
+  lidar:
+    enabled: true
+    channels: 32
+    points_per_second: 56000
+    rotation_frequency: 20
+    upper_fov: 10.0
+    lower_fov: -30.0
+    range: 50.0
+
+experiment:
+  frames: 200
+  target_speed: 8.0
+  record_data: true

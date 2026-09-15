@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fsae-self-driving-sim"
+version = "0.1.0"
+description = "CARLA experiments for Formula SAE Driverless perception, planning, and control"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "numpy>=1.26.4,<2",
+    "opencv-python==4.10.0.84",
+    "PyYAML>=6,<7",
+    "matplotlib>=3.8,<4",
+    "Pillow>=10,<12",
+]
+
+[project.optional-dependencies]
+carla = ["carla==0.9.16"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sim", "sim.*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+sim = [
+    "config/*.yaml",
+    "assets/cones/*.py",
+    "assets/cones/*.md",
+    "assets/cones/*.json",
+    "assets/cones/*.mtl",
+    "assets/cones/*.obj",
+    "assets/cones/textures/*.png",
+    "assets/cones/carla/FASE/*.json",
+    "assets/cones/carla/FASE/*.uasset",
+    "setup/*.patch",
+]

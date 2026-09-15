@@ -1,0 +1,24 @@
+{
+  "props": [
+    {
+      "name": "fsae_small_blue_single_white",
+      "path": "/Game/Carla/FASE/fsae_small_blue_single_white.fsae_small_blue_single_white",
+      "size": "Small"
+    },
+    {
+      "name": "fsae_small_yellow_single_black",
+      "path": "/Game/Carla/FASE/fsae_small_yellow_single_black.fsae_small_yellow_single_black",
+      "size": "Small"
+    },
+    {
+      "name": "fsae_small_orange_single_white",
+      "path": "/Game/Carla/FASE/fsae_small_orange_single_white.fsae_small_orange_single_white",
+      "size": "Small"
+    },
+    {
+      "name": "fsae_large_orange_dual_white",
+      "path": "/Game/Carla/FASE/fsae_large_orange_dual_white.fsae_large_orange_dual_white",
+      "size": "Large"
+    }
+  ]
+}

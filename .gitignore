@@ -1,0 +1,28 @@
+# External engines and simulator downloads
+/carla/
+/UE4/
+/CarlaUE5/
+/UnrealEngine5_carla/
+
+# Local environments, editors, and credentials
+.venv/
+venv/
+/.vscode/
+/.github/
+.env
+.env.*
+
+# Python build and cache files
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+/build/
+/dist/
+
+# Local experiment outputs and downloaded reference papers
+/data/
+/doc/papers/*.pdf
+*.log
+*.ics
+tempCodeRunnerFile.py

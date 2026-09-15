@@ -1,0 +1,2 @@
+# Install the CARLA Python API matching your server separately (see README.md).
+-e .
