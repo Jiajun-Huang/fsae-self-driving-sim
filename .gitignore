@@ -26,3 +26,5 @@ __pycache__/
 *.log
 *.ics
 tempCodeRunnerFile.py
+
+AGENTS.md
